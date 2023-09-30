@@ -1,0 +1,4 @@
+{
+    "guess_list":"data/valid-wordle-words.txt",
+    "answer_list":"data/wordle-nyt-answers-alphabetical.txt"
+}
