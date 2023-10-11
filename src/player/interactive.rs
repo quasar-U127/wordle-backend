@@ -1,4 +1,4 @@
-use crate::wordle::score::{Score, Response};
+use crate::wordle_core::judge::{Judgement, Decision};
 
 use std::io::stdin;
 use std::vec::Vec;
@@ -23,7 +23,7 @@ impl Scanner {
     }
 }
 pub struct InteractivePlayer {
-    guesses: Vec<Score>,
+    guesses: Vec<Judgement>,
     scanner: Scanner,
 }
 
@@ -40,16 +40,16 @@ impl Player for InteractivePlayer {
         return self.scanner.scan();
     }
 
-    fn add_score(&mut self, new_score: &Score) {
+    fn add_score(&mut self, new_score: &Judgement) {
         self.guesses.push(new_score.clone());
         println!("Got Reponse:");
         println!("\t{}",new_score.guess());
         print!("\t");
         for r in new_score.responses().iter() {
             match r {
-                Response::Wrong => print!("_"),
-                Response::Misplaced => print!("+"),
-                Response::Correct => print!("*"),
+                Decision::Wrong => print!("_"),
+                Decision::Misplaced => print!("+"),
+                Decision::Correct => print!("*"),
             }
         }
         println!();
