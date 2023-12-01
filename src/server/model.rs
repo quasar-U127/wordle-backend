@@ -1,7 +1,7 @@
 use crate::server::session;
 use std::{
     fs::{self, File},
-    io::{BufReader, Write},
+    io::Write,
     path::{Path, PathBuf},
 };
 pub struct Model {
@@ -10,6 +10,9 @@ pub struct Model {
 
 impl Model {
     pub fn new(data_path: &Path) -> Model {
+        if !data_path.exists() {
+            let _ = fs::create_dir_all(data_path);
+        }
         return Model {
             data_path: data_path.to_path_buf(),
         };
@@ -26,7 +29,7 @@ impl Model {
     }
 
     pub fn store_session(&self, sess: session::Session) -> Result<(), std::io::Error> {
-        println!("{}", self.get_file_path(sess.id()).to_str().unwrap());
+        // println!("{}", self.get_file_path(sess.id()).to_str().unwrap());
         let mut file = File::options()
             .create(true)
             .write(true)
@@ -37,10 +40,6 @@ impl Model {
     }
 
     pub fn get_session(&self, id: session::SessionId) -> session::Session {
-        let mut file = File::options()
-            .read(true)
-            .open(self.get_file_path(id))
-            .unwrap();
         let sess_ser = fs::read_to_string(self.get_file_path(id)).unwrap();
         let sess: session::Session = serde_json::from_str(&sess_ser).unwrap();
         return sess;

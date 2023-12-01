@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::wordle_core::{judge, GameState, Wordle};
+use crate::wordle_core::{GameState, Wordle};
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy, serde::Serialize, serde::Deserialize)]
 pub struct SessionId(u64);

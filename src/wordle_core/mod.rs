@@ -1,11 +1,11 @@
 pub mod game;
 pub mod judge;
 
-pub use judge::Judgement;
+pub use judge::JudgeResponse;
 
 use crate::utils;
 use rand::seq::SliceRandom;
-use std::{collections::HashSet, path::Path};
+use std::path::Path;
 
 pub use self::game::GameState;
 pub struct WordleGenerator {

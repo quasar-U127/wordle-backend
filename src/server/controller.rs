@@ -1,6 +1,5 @@
 use std::path::Path;
 
-use actix_web::web;
 
 use super::session;
 use crate::server::model;
@@ -32,7 +31,7 @@ impl Controller {
         let _ = self.store().store_session(sess);
         return id;
     }
-    pub fn guess(&self, id: session::SessionId, word: &String) -> Option<wordle_core::Judgement> {
+    pub fn guess(&self, id: session::SessionId, word: &String) -> wordle_core::JudgeResponse {
         let mut sess = self.store.get_session(id);
         let jury = self.driver.jury();
         let judgement = jury.decide(word, sess.state_mut());

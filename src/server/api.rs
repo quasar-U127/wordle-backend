@@ -1,10 +1,9 @@
 use crate::server::controller;
 use crate::server::session;
-use actix_web::{get, web, HttpResponse, Responder};
+use actix_web::{get, web};
 
 #[get("/wordle/new")]
 async fn newgame(ctrl: web::Data<controller::Controller>) -> actix_web::Result<String> {
-    println!("/wordle/new");
     let id = ctrl.new_game();
     return Ok(serde_json::to_string(&id).unwrap());
     // return id;
@@ -16,7 +15,7 @@ async fn guess(
     path: web::Path<(session::SessionId, String)>,
 ) -> actix_web::Result<String> {
     let (id, word) = path.into_inner();
-    let res = ctrl.guess(id, &word).unwrap();
+    let res = ctrl.guess(id, &word);
     return Ok(serde_json::to_string(&res).unwrap());
 }
 

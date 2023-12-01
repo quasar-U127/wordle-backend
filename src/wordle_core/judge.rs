@@ -1,7 +1,6 @@
 use crate::wordle_core::game;
 use std::collections::HashSet;
 
-use super::GameState;
 #[derive(Clone, Copy, PartialEq, serde::Serialize, serde::Deserialize)]
 pub enum Decision {
     Wrong,
@@ -17,6 +16,12 @@ pub struct Judgement {
 
 pub struct Jury {
     valid_guesses: HashSet<String>,
+}
+
+#[derive(Clone, serde::Serialize, serde::Deserialize)]
+pub struct JudgeResponse {
+    verdict: String,
+    judgement: Option<Judgement>,
 }
 
 impl Judgement {
@@ -66,16 +71,47 @@ impl Judgement {
     }
 }
 
+impl JudgeResponse {
+    pub fn invalid() -> JudgeResponse {
+        JudgeResponse {
+            verdict: "invalid".to_string(),
+            judgement: None,
+        }
+    }
+    pub fn no_attempts_left() -> JudgeResponse {
+        JudgeResponse {
+            verdict: "no_attempts_left".to_string(),
+            judgement: None,
+        }
+    }
+    pub fn valid(judgement: Judgement) -> JudgeResponse {
+        if judgement.verdict() {
+            JudgeResponse {
+                verdict: "win".to_string(),
+                judgement: Some(judgement),
+            }
+        } else {
+            JudgeResponse {
+                verdict: "valid".to_string(),
+                judgement: Some(judgement),
+            }
+        }
+    }
+}
+
 impl Jury {
     pub fn new(valid_guesses: HashSet<String>) -> Jury {
         return Jury { valid_guesses };
     }
-    pub fn decide(&self, word: &String, state: &mut GameState) -> Option<Judgement> {
-        if !self.valid_guesses.contains(word) || state.guesses_made() >= state.guesses_allowed() {
-            return None;
+    pub fn decide(&self, word: &String, state: &mut game::GameState) -> JudgeResponse {
+        if state.guesses_made() >= state.guesses_allowed() {
+            return JudgeResponse::no_attempts_left();
+        }
+        if !self.valid_guesses.contains(word) {
+            return JudgeResponse::invalid();
         }
         let judgement = Judgement::new(word, &state.get_answer());
         state.add_judgement(judgement.clone());
-        return Some(judgement);
+        return JudgeResponse::valid(judgement);
     }
 }
